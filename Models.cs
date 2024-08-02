@@ -19,6 +19,10 @@ public static class Models
         public float WalkForwardSpeed;
         public float WalkBackwardSpeed;
         public float WalkStrafeSpeed;
+
+        [Header("JumpSettings")]
+        public float JumpForce;
+        public float JumpFalloff;
     }
 
     #endregion
