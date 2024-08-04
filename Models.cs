@@ -5,6 +5,13 @@ public static class Models
 {
     #region - Player -
 
+    public enum PlayerStance
+    {
+        Stand,
+        Crouch,
+        Crawl
+    }
+
     [Serializable]
     public class PlayerSettingsModel
     {
@@ -23,6 +30,13 @@ public static class Models
         [Header("JumpSettings")]
         public float JumpForce;
         public float JumpFalloff;
+    }
+
+    [Serializable]
+    public class CharStance
+    {
+        public float CameraHeight;
+        public CapsuleCollider StanceCollider;
     }
 
     #endregion
