@@ -1,7 +1,5 @@
 using static Models;
 using UnityEngine;
-using UnityEngine.UIElements;
-using NUnit.Framework.Internal;
 
 public class PlayerController : MonoBehaviour
 {
@@ -54,6 +52,11 @@ public class PlayerController : MonoBehaviour
 
     float _stanceMarginCheck = .05f;
 
+    bool _isSprinting;
+
+    Vector3 _newMoveSpeed;
+    Vector3 _newMoveSpeedVelocity;
+
     void Awake()
     {
         _defInput = new Ia_defInput();
@@ -63,6 +66,8 @@ public class PlayerController : MonoBehaviour
         _defInput.player.Jump.performed += e => Jump();
         _defInput.player.Crouch.performed += e => Crouch();
         _defInput.player.Crawl.performed += e => Crawl();
+        _defInput.player.Sprint.performed += e => ToggleSprint();
+        _defInput.player.SprintRelese.performed += e => StopSprint();
         _defInput.Enable();
 
         _cameraRotation = _cameraHolder.localRotation.eulerAngles;
@@ -94,10 +99,22 @@ public class PlayerController : MonoBehaviour
 
     void SetMove()
     {
-        float vertSpeed = _playerSettings.WalkForwardSpeed * _inputMove.y * Time.deltaTime;
-        float horSpeed = _playerSettings.WalkStrafeSpeed * _inputMove.x * Time.deltaTime;
+        if (_inputMove.y <= .2f)
+        {
+            _isSprinting = false;
+        }
 
-        Vector3 moveSpeed = new Vector3(horSpeed, 0, vertSpeed);
+        float vertSpeed = _playerSettings.WalkForwardSpeed;
+        float horSpeed = _playerSettings.WalkStrafeSpeed;
+
+        if (_isSprinting)
+        {
+            vertSpeed = _playerSettings.RunForwardSpeed;
+            horSpeed = _playerSettings.RunStrafeSpeed;
+        }
+
+        _newMoveSpeed = Vector3.SmoothDamp(_newMoveSpeed, new Vector3(horSpeed * _inputMove.x * Time.deltaTime, 0, vertSpeed * _inputMove.y * Time.deltaTime), ref _newMoveSpeedVelocity, _playerSettings.MoveSmoothing);
+        var moveSpeed = transform.TransformDirection(_newMoveSpeed);
 
         if (_playerGravity > _minGravity)
         {
@@ -112,7 +129,8 @@ public class PlayerController : MonoBehaviour
         moveSpeed.y = _playerGravity;
         moveSpeed += _jumpForce * Time.deltaTime;
 
-        _charController.Move(transform.TransformDirection(moveSpeed));
+        //_charController.Move(transform.TransformDirection(_newMoveSpeed));
+        _charController.Move(moveSpeed);
     }
 
     void SetJump()
@@ -144,6 +162,12 @@ public class PlayerController : MonoBehaviour
     {
         if (!_charController.isGrounded) return;
 
+        if (_stance == PlayerStance.Crawl)
+        {
+            _stance = PlayerStance.Stand;
+            return;
+        }
+
         _jumpForce = Vector3.up * _playerSettings.JumpForce;
         _playerGravity = 0;
     }
@@ -171,6 +195,24 @@ public class PlayerController : MonoBehaviour
     void Crawl()
     {
         _stance = PlayerStance.Crawl;
+    }
+
+    void ToggleSprint()
+    {
+        if (_inputMove.y <= .2f)
+        {
+            _isSprinting = false;
+            return;
+        }
+
+        _isSprinting = !_isSprinting;
+    }
+
+    void StopSprint()
+    {
+        if (!_playerSettings.IsHoldForSprint) return;
+
+        _isSprinting = false;
     }
 
     bool StanceCheck(float stanceCheckHeight)

@@ -22,7 +22,16 @@ public static class Models
         public bool LookXInverted;
         public bool LookYInverted;
 
-        [Header("MoveSettings")]
+        [Header("SprinSettings")]
+        public bool IsHoldForSprint;
+        public float MoveSmoothing;
+
+        [Header("MoveRunSettings")]
+        public float RunForwardSpeed;
+        public float RunBackwardSpeed;
+        public float RunStrafeSpeed;
+
+        [Header("MoveWalkSettings")]
         public float WalkForwardSpeed;
         public float WalkBackwardSpeed;
         public float WalkStrafeSpeed;
