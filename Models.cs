@@ -39,6 +39,13 @@ public static class Models
         [Header("JumpSettings")]
         public float JumpForce;
         public float JumpFalloff;
+        public float FallSmoothing;
+
+        [Header("SpeedModifiers")]
+        public float SpeedModifier = 1f;
+        public float CrouchSpeedModifier = 1f;
+        public float CrawlSpeedModifier = 1f;
+        public float FallSpeedModifier = 1f;
     }
 
     [Serializable]

@@ -113,7 +113,30 @@ public class PlayerController : MonoBehaviour
             horSpeed = _playerSettings.RunStrafeSpeed;
         }
 
-        _newMoveSpeed = Vector3.SmoothDamp(_newMoveSpeed, new Vector3(horSpeed * _inputMove.x * Time.deltaTime, 0, vertSpeed * _inputMove.y * Time.deltaTime), ref _newMoveSpeedVelocity, _playerSettings.MoveSmoothing);
+        if (!_charController.isGrounded)
+        {
+            _playerSettings.SpeedModifier = _playerSettings.FallSpeedModifier;
+        }
+        else if (_stance == PlayerStance.Crouch)
+        {
+            _playerSettings.SpeedModifier = _playerSettings.CrouchSpeedModifier;
+        }
+        else if (_stance == PlayerStance.Crawl)
+        {
+            _playerSettings.SpeedModifier = _playerSettings.CrawlSpeedModifier;
+        }
+        else
+        {
+            _playerSettings.SpeedModifier = 1f;
+        }
+
+        vertSpeed *= _playerSettings.SpeedModifier;
+        horSpeed *= _playerSettings.SpeedModifier;
+
+        _newMoveSpeed = Vector3.SmoothDamp(_newMoveSpeed, new Vector3(horSpeed * _inputMove.x * Time.deltaTime, 0, vertSpeed * _inputMove.y * Time.deltaTime),
+            ref _newMoveSpeedVelocity,
+                _charController.isGrounded ? _playerSettings.MoveSmoothing : _playerSettings.FallSmoothing);
+
         var moveSpeed = transform.TransformDirection(_newMoveSpeed);
 
         if (_playerGravity > _minGravity)
@@ -164,6 +187,11 @@ public class PlayerController : MonoBehaviour
 
         if (_stance == PlayerStance.Crawl)
         {
+            if (StanceCheck(_standStance.StanceCollider.height))
+            {
+                return;
+            }
+
             _stance = PlayerStance.Stand;
             return;
         }
