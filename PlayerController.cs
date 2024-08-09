@@ -37,8 +37,12 @@ public class PlayerController : MonoBehaviour
     [SerializeField] CharStance _crouchStance;
     [SerializeField] CharStance _crawlStance;
 
+    [Header("Weapon")]
+    [SerializeField] WpController _currentWp;
+
     Vector2 _inputMove;
-    Vector2 _inputLook;
+    [HideInInspector]
+    public Vector2 InputLook;
 
     float _camHeight;
     float _camHeightVelocity;
@@ -62,7 +66,7 @@ public class PlayerController : MonoBehaviour
         _defInput = new Ia_defInput();
 
         _defInput.player.Move.performed += e => _inputMove = e.ReadValue<Vector2>();
-        _defInput.player.Look.performed += e => _inputLook = e.ReadValue<Vector2>();
+        _defInput.player.Look.performed += e => InputLook = e.ReadValue<Vector2>();
         _defInput.player.Jump.performed += e => Jump();
         _defInput.player.Crouch.performed += e => Crouch();
         _defInput.player.Crawl.performed += e => Crawl();
@@ -76,6 +80,11 @@ public class PlayerController : MonoBehaviour
         _charController = GetComponent<CharacterController>();
 
         _camHeight = _cameraHolder.localPosition.y;
+
+        if (_currentWp)
+        {
+            _currentWp.Init(this);
+        }
     }
 
     void Update()
@@ -88,10 +97,10 @@ public class PlayerController : MonoBehaviour
 
     void SetLook()
     {
-        _playerRotation.y += _playerSettings.LookXSensitivity * (_playerSettings.LookXInverted ? -_inputLook.x : _inputLook.x) * Time.deltaTime;
+        _playerRotation.y += _playerSettings.LookXSensitivity * (_playerSettings.LookXInverted ? -InputLook.x : InputLook.x) * Time.deltaTime;
         transform.localRotation = Quaternion.Euler(_playerRotation);
 
-        _cameraRotation.x += _playerSettings.LookYSensitivity * (_playerSettings.LookYInverted ? _inputLook.y : -_inputLook.y) * Time.deltaTime;
+        _cameraRotation.x += _playerSettings.LookYSensitivity * (_playerSettings.LookYInverted ? InputLook.y : -InputLook.y) * Time.deltaTime;
         _cameraRotation.x = Mathf.Clamp(_cameraRotation.x, _lookClampYMin, _lookClampYMax);
 
         _cameraHolder.localRotation = Quaternion.Euler(_cameraRotation);

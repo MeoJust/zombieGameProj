@@ -56,4 +56,21 @@ public static class Models
     }
 
     #endregion
+
+    #region - Weapon -
+
+    [Serializable]
+    public class WpSettingsModel
+    {
+        [Header("Sway")]
+        public float SwayAmount;
+        public bool IsSwayYInverted;
+        public bool IsSwayXInverted;
+        public float SwaySmoothing;
+        public float SwaySmoothReset;
+        public float SwayClampX;
+        public float SwayClampY;
+    }
+
+    #endregion
 }
