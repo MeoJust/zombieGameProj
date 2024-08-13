@@ -46,6 +46,10 @@ public static class Models
         public float CrouchSpeedModifier = 1f;
         public float CrawlSpeedModifier = 1f;
         public float FallSpeedModifier = 1f;
+
+        [Header("IsGrounded/Falling")]
+        public float IsGroundedRadius;
+        public float IsFallingSpeed;
     }
 
     [Serializable]
@@ -62,14 +66,22 @@ public static class Models
     [Serializable]
     public class WpSettingsModel
     {
-        [Header("Sway")]
+        [Header("WpSway")]
         public float SwayAmount;
+        public float SwayZAmount;
         public bool IsSwayYInverted;
         public bool IsSwayXInverted;
         public float SwaySmoothing;
         public float SwaySmoothReset;
         public float SwayClampX;
         public float SwayClampY;
+
+        [Header("WpMoveSway")]
+        public float MoveSwayX;
+        public float MoveSwayY;
+        public bool IsMoveSwayYInverted;
+        public bool IsMoveSwayXInverted;
+        public float MoveSwaySmoothing;
     }
 
     #endregion
